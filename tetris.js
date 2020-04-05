@@ -1,5 +1,6 @@
 /**
  * This game was developed by a llama :D
+ * A lot of this is still messy! I'll update it in the repo in my own gh
  * Audio effects from https://gamebanana.com/sounds/download/44751
  */
 
@@ -9,21 +10,21 @@ const ctx = canvas.getContext("2d");
 
 // Import pictures
 const background = new Image();
-background.src = "tetris-llama.png";
+background.src = "tetris/img/tetris-llama.png";
 const skyBlock = new Image();
-skyBlock.src = "sky-block.png";
+skyBlock.src = "tetris/img/sky-block.png";
 const blueBlock = new Image();
-blueBlock.src = "blue-block.png";
+blueBlock.src = "tetris/img/blue-block.png";
 const orangeBlock = new Image();
-orangeBlock.src = "orange-block.png";
+orangeBlock.src = "tetris/img/orange-block.png";
 const yellowBlock = new Image();
-yellowBlock.src = "yellow-block.png";
+yellowBlock.src = "tetris/img/yellow-block.png";
 const greenBlock = new Image();
-greenBlock.src = "green-block.png";
+greenBlock.src = "tetris/img/green-block.png";
 const purpleBlock = new Image();
-purpleBlock.src = "purple-block.png";
+purpleBlock.src = "tetris/img/purple-block.png";
 const redBlock = new Image();
-redBlock.src = "red-block.png";
+redBlock.src = "tetris/img/red-block.png";
 
 // Some constants
 const scale = 20; // lol everything is scaled by 20
@@ -63,18 +64,18 @@ class Music {
 }
 
 // Import music
-const theme = new Music("theme.mp3");
+const theme = new Music("tetris/sounds/theme.mp3");
 theme.setVolume(0.8);
-const sfx_move = new Music("move.wav");
-const sfx_pause = new Music("pause.wav");
-const sfx_drop = new Music("harddrop.wav");
-const sfx_rotate = new Music("rotate.wav");
-const sfx_collide = new Music("linefall.wav");
+const sfx_move = new Music("tetris/sounds/move.wav");
+const sfx_pause = new Music("tetris/sounds/pause.wav");
+const sfx_drop = new Music("tetris/sounds/harddrop.wav");
+const sfx_rotate = new Music("tetris/sounds/rotate.wav");
+const sfx_collide = new Music("tetris/sounds/linefall.wav");
 sfx_collide.setVolume(0.8);
-const sfx_clear1 = new Music("erase1.wav");
-const sfx_clear2 = new Music("erase2.wav");
-const sfx_clear3 = new Music("erase3.wav");
-const sfx_clear4 = new Music("erase4.wav");
+const sfx_clear1 = new Music("tetris/sounds/erase1.wav");
+const sfx_clear2 = new Music("tetris/sounds/erase2.wav");
+const sfx_clear3 = new Music("tetris/sounds/erase3.wav");
+const sfx_clear4 = new Music("tetris/sounds/erase4.wav");
 
 // Tetrominos
 const IBlock = [
@@ -287,12 +288,18 @@ const draw = () => {
 
 // Game over
 const gameOver = () => {
+  theme.pause();
   window.alert("Game over!");
+  theme.play();
   stage.arr.forEach(row => row.fill(0));
   t.x = 100;
   t.y = 0;
   t.newShape();
   stage.score = 0;
+  gamePaused = false;
+  document.querySelector("#gamePaused").innerHTML = gamePaused
+    ? "GAME PAUSED"
+    : "LET'S PLAY";
 };
 
 // Game timer
@@ -326,7 +333,9 @@ const update = (time = 0) => {
       }
 
       // Game over if there's nowhere to spawn
-      if (collidesWith(stage, t)) gameOver();
+      if (collidesWith(stage, t)) {
+        gameOver();
+      }
     }
     dropCounter = 0;
     if (gamePaused) {
